@@ -1,34 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Câmera e Captura</title>
+    <title>Visualização da Câmera</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #003060; /* Cor de fundo */
+            color: #ffffff; /* Cor do texto */
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        video {
+            width: 80%; /* Ajuste a largura conforme necessário */
+            max-width: 600px; /* Largura máxima */
+            height: auto;
+            border: 2px solid #34B5DF; /* Borda do vídeo */
+            border-radius: 10px; /* Cantos arredondados */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra */
+        }
+
+        /* Estilo adicional para uma mensagem de erro */
+        .error-message {
+            color: #ff0000; /* Vermelho para erros */
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Abra a Câmera</h1>
-    <video id="video" width="320" height="240" autoplay></video>
-    <button id="snap">Tirar Foto</button>
-    <canvas id="canvas" width="320" height="240"></canvas>
-
+    <h1>Visualização da Câmera</h1>
+    <video id="video" autoplay playsinline></video>
+    <div id="error-message" class="error-message" style="display: none;"></div>
     <script>
         const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const snap = document.getElementById('snap');
+        const errorMessage = document.getElementById('error-message');
 
-        // Solicitar acesso à câmera
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-            })
-            .catch(err => {
-                console.log("Erro: " + err);
-            });
+            } catch (error) {
+                console.error("Erro ao acessar a câmera: ", error);
+                errorMessage.innerText = "Erro ao acessar a câmera. Verifique as permissões.";
+                errorMessage.style.display = 'block';
+            }
+        }
 
-        // Capturar a imagem no canvas
-        snap.addEventListener("click", () => {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        initCamera();
+
+        // Para parar o stream ao fechar a aba
+        window.addEventListener('beforeunload', () => {
+            const tracks = video.srcObject?.getTracks();
+            tracks?.forEach(track => track.stop());
         });
     </script>
 </body>
