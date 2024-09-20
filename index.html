@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualização da Câmera</title>
+    <title>Câmera Traseira</title>
     <style>
         body {
             display: flex;
@@ -12,8 +12,8 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #003060; /* Cor de fundo */
-            color: #ffffff; /* Cor do texto */
+            background-color: #003060;
+            color: #ffffff;
             font-family: Arial, sans-serif;
         }
 
@@ -23,23 +23,22 @@
         }
 
         video {
-            width: 80%; /* Ajuste a largura conforme necessário */
-            max-width: 600px; /* Largura máxima */
+            width: 80%;
+            max-width: 600px;
             height: auto;
-            border: 2px solid #34B5DF; /* Borda do vídeo */
-            border-radius: 10px; /* Cantos arredondados */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra */
+            border: 2px solid #34B5DF;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* Estilo adicional para uma mensagem de erro */
         .error-message {
-            color: #ff0000; /* Vermelho para erros */
+            color: #ff0000;
             margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Visualização da Câmera</h1>
+    <h1>Câmera Traseira</h1>
     <video id="video" autoplay playsinline></video>
     <div id="error-message" class="error-message" style="display: none;"></div>
     <script>
@@ -48,7 +47,9 @@
 
         async function initCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "environment" } } // Solicita a câmera traseira
+                });
                 video.srcObject = stream;
             } catch (error) {
                 console.error("Erro ao acessar a câmera: ", error);
@@ -59,7 +60,6 @@
 
         initCamera();
 
-        // Para parar o stream ao fechar a aba
         window.addEventListener('beforeunload', () => {
             const tracks = video.srcObject?.getTracks();
             tracks?.forEach(track => track.stop());
